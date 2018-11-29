@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +10,16 @@ namespace ConsoleApp2
         /// 序列改变测试
         /// </summary>
         private static int _permuteTimes = 0;
+
+        /// <summary>
+        /// 输出次数
+        /// </summary>
+        private static int outputTimes = 0;
+
+        /// <summary>
+        /// 累加次数
+        /// </summary>
+        private static int addTimes = 0;
 
         public static void Main()
         {
@@ -25,15 +35,15 @@ namespace ConsoleApp2
                     };
                 }
 
-          
+
                 Console.WriteLine("11个球并在一起处理的全排列开始" + DateTime.Now);
-                List<int> elevenNumber = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+                List<int> elevenNumber = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
                 List<List<int>> newpermutations = PermuteRecrusive(elevenNumber);
                 Console.WriteLine("11个球并在一起处理的全排列结束" + DateTime.Now);
-                var allCount = CountDistinct(newpermutations, new List<int> { 3, 3, 5 }, ConvertFuc());
+                var allCount = CountDistinct(newpermutations, new List<int> {3, 3, 5}, ConvertFuc());
 
                 Console.WriteLine($"三红球三黄球三篮球一黑一白共11个球分成3,3,5三堆的组合是：{allCount}");
-                List<int> nineNumber = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                List<int> nineNumber = new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9};
                 DateTime now1 = DateTime.Now;
                 Console.WriteLine("11个球排除掉黑白两个球的全排列开始" + now1);
                 _permuteTimes = 0;
@@ -56,7 +66,7 @@ namespace ConsoleApp2
                 Console.WriteLine($"黑白球都在C箱子的组合数为{inC}");
                 Console.WriteLine($"所有组合的情况加起来的数量为{inAc * 2 + inAb * 2 + inBc * 2 + inA + inB + inC}");
 
-        
+
                 Console.ReadLine();
             }
             catch (Exception ex)
@@ -70,17 +80,20 @@ namespace ConsoleApp2
         {
             List<string> source1 = new List<string>();
             int num = 0;
+            int times = 0;
+            int reset = 0;
             foreach (List<int> source2 in permutations)
             {
                 ++num;
-                if (num % 100000 == 0)
+                if (num == 100000)
                 {
-                    //Console.WriteLine();
-                    //Console.WriteLine("去重前" + source1.Count);
+                    reset += 1;
+
                     source1 = source1.Distinct().ToList();
-                    //Console.WriteLine("去重后" + source1.Count);
-                    Console.WriteLine("已处理" + num / 10000 + "万条数据的去重");
+
+                    Console.WriteLine("已处理" + reset + "十万条数据的去重");
                     //Console.WriteLine();
+                    num = 0;
                 }
 
                 string modList = ConvertToString(source2.ToList(), list, convertFuc);
@@ -98,7 +111,6 @@ namespace ConsoleApp2
             ints.Sort();
             PermuteHelper(ints, new List<int>(), resSet);
             return resSet;
-
         }
 
         public static void PermuteHelper(List<int> ints, List<int> subset, List<List<int>> resSet)
@@ -106,11 +118,16 @@ namespace ConsoleApp2
             if (subset.Count == ints.Count)
             {
                 ++_permuteTimes;
-                if (_permuteTimes % 10000 == 0)
+                ++outputTimes;
+
+                if (outputTimes == 10000)
                 {
-                    //System.GC.Collect();
-                    Console.WriteLine("已处理" + _permuteTimes / 10000 + "万条数据");
+                    outputTimes = 0;
+                    ++addTimes;
+
+                    Console.WriteLine("已处理" + addTimes + "万条数据");
                 }
+
                 resSet.Add(new List<int>(subset));
             }
             else
